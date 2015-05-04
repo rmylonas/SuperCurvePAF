@@ -745,7 +745,9 @@ RPPASet <- function(path,
                             error=function(e) {
                                 traceback()
                                 message(conditionMessage(e))
-                                NULL
+                                rppa@data$Adj.Mean.Net <- rppa@data$Mean.Net
+                                rppa@data$Adj.Mean.Total <- rppa@data$Mean.Total
+                                rppa
                             })
                 if (is.RPPA(rppa)) {
                     ncols.list <- lapply(c(rppa, rppas[[i]]),
@@ -860,6 +862,7 @@ RPPASet <- function(path,
                             message(conditionMessage(e))
                             NULL
                         })
+
             ## Update only on success
             if (is.RPPAFit(fit)) {
                 fits[[i]] <- fit

@@ -428,3 +428,65 @@ layout.as.superslide <- function(data.df,
     return(data.df)
 }
 
+
+##-----------------------------------------------------------------------------
+## read MAPIX data files
+## added by Roman Mylonas 2015
+# parse mapix files
+read.mapix <- function(conn) {
+  ## Check arguments
+  stopifnot(inherits(conn, "connection"))
+  
+  # we have currently 4 replicates and 5 dilutions
+  nr.replicates <- 4
+  nr.dil <- 5
+  
+  transform.row <- function(x){
+    # get the values of interest and make sure they're numeric
+    my.row <- as.numeric(x$Row)
+    my.col <- as.numeric(x$Column)
+        
+    # get Main and Sub.Rows
+    Main.Row <- 1
+    Sub.Row <- my.row
+    
+    # get Main and Sub.cols
+    Main.Col <- ceiling(my.col/nr.dil)
+    Sub.Col <- my.col %% nr.dil
+    if(Sub.Col == 0){
+      Sub.Col <- nr.dil
+      Main.Col <- floor(my.col/nr.dil)
+    }
+    
+    # construct the sample name
+    Sample <- paste("sample", my.row, sep=" ")
+    
+    # parse values from Mapix file
+    Mean.Net <- x$F785.Mean...B785
+    Mean.Total <- x$F785.Mean # + x$B785.Mean
+    Median.Net <- x$F785.Median...B785
+    Vol.Bkg <- x$B785
+    Vol.Dust <- 0
+    
+    # create a data.frame and return it
+    data.frame(Main.Row, Main.Col, Sub.Row, Sub.Col, Sample, Mean.Net, Mean.Total, Median.Net, Vol.Bkg, Vol.Dust)
+  }
+  
+  my.mxd <- read.table(file=conn, header=TRUE, sep=";")
+  
+  # get the first row seperately
+  myAkt <- transform.row(my.mxd[1,])
+  
+  # and fill in all the following rows
+  for(i in 2:dim(my.mxd)[1]){
+    myAkt <- rbind(myAkt, transform.row(my.mxd[i,]))
+  }
+  
+      ## Annotate data frame with metadata
+  attr(myAkt, "software")  <- "mapix"
+  #attr(myAkt, "timestamp") <- getTimestamp(pathname)
+
+  return(myAkt)
+  
+}
+

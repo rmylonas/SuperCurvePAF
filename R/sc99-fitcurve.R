@@ -50,7 +50,7 @@ fitCurveAndSummarizeFromSettings <- function(settings,
     ## Save results (as rppaset takes forever to generate)
     rda.filename <- "sc-rppaset.RData"
     save(rppaset, file=file.path(outdir, rda.filename))
-
+    
     ## Summarize the results
     progressStage(monitor) <- "Graphing"
     write.summary(rppaset,
