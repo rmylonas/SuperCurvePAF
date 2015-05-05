@@ -459,7 +459,7 @@ read.mapix <- function(conn) {
     }
     
     # construct the sample name
-    Sample <- paste("sample", my.row, sep=" ")
+    Sample <- paste("sample", my.row, Main.Col, sep=".")
     
     # parse values from Mapix file
     Mean.Net <- x$F785.Mean...B785
