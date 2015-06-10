@@ -459,20 +459,20 @@ read.mapix <- function(conn) {
     }
     
     # construct the sample name
-    Sample <- paste("sample", my.row, Main.Col, sep=".")
+    Sample <- paste("sample", formatC(Main.Col, format="fg", digits=1, flag="0"), formatC(my.row, format="fg", digits=1, flag="0"), sep=".")
     
     # parse values from Mapix file
-    Mean.Net <- x$F785.Mean...B785
-    Mean.Total <- x$F785.Mean # + x$B785.Mean
-    Median.Net <- x$F785.Median...B785
-    Vol.Bkg <- x$B785
+    Mean.Net <- as.numeric(x$F785.Mean...B785)
+    Mean.Total <- as.numeric(x$F785.Mean) # + x$B785.Mean
+    Median.Net <- as.numeric(x$F785.Median...B785)
+    Vol.Bkg <- as.numeric(x$B785)
     Vol.Dust <- 0
     
     # create a data.frame and return it
     data.frame(Main.Row, Main.Col, Sub.Row, Sub.Col, Sample, Mean.Net, Mean.Total, Median.Net, Vol.Bkg, Vol.Dust)
   }
   
-  my.mxd <- read.table(file=conn, header=TRUE, sep=";")
+  my.mxd <- read.table(file=conn, header=TRUE, sep="\t")
   
   # get the first row seperately
   myAkt <- transform.row(my.mxd[1,])
